@@ -1,8 +1,8 @@
-import os
 from pathlib import Path
+from datetime import timedelta
 from decouple import config
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
@@ -148,12 +148,9 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Укажите порт, на котором работает ваш Vue.js
     "http://127.0.0.1:5173",
-    "https://domen.com",
-    "https://www.domen.com",
 ]
 
 # JWT Configuration
-from datetime import timedelta
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
@@ -201,25 +198,5 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 
 # Celery Beat настройки для периодических задач
-CELERY_BEAT_SCHEDULE = {
-    'check-expired-subscriptions': {
-        'task': 'apps.subscribe.tasks.check_expired_subscriptions',
-        'schedule': 3600.0,  # Каждый час
-    },
-    'send-subscription-expiry-reminders': {
-        'task': 'apps.subscribe.tasks.send_subscription_expiry_reminder',
-        'schedule': 86400.0,  # Каждый день
-    },
-    'cleanup-old-payments': {
-        'task': 'apps.payment.tasks.cleanup_old_payments',
-        'schedule': 604800.0,  # Каждую неделю
-    },
-    'cleanup-old-webhook-events': {
-        'task': 'apps.payment.tasks.cleanup_old_webhook_events',
-        'schedule': 86400.0,  # Каждый день
-    },
-    'retry-failed-webhook-events': {
-        'task': 'apps.payment.tasks.retry_failed_webhook_events',
-        'schedule': 3600.0,  # Каждый час
-    },
-}
+# Отключено: ссылки на задачи отсутствующих приложений. Включите при добавлении apps.subscribe и apps.payment
+CELERY_BEAT_SCHEDULE = {}

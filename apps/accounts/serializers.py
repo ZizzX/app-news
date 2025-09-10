@@ -1,5 +1,3 @@
-from math import e
-import re
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
@@ -22,7 +20,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return attrs
     
     def create(self, validated_data):
-        user = User.objects.create(
+        user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
             first_name=validated_data.get('first_name', ''),
@@ -70,10 +68,20 @@ class UserProfileSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'created_at', 'updated_at')
 
     def get_posts_count(self, obj):
-        return obj.posts.count()
+        # Return 0 if related manager 'posts' doesn't exist
+        related = getattr(obj, 'posts', None)
+        try:
+            return related.count() if related is not None else 0
+        except Exception:
+            return 0
 
     def get_comments_count(self, obj):
-        return obj.comments.count()
+        # Return 0 if related manager 'comments' doesn't exist
+        related = getattr(obj, 'comments', None)
+        try:
+            return related.count() if related is not None else 0
+        except Exception:
+            return 0
     
 
 class UserUpdateSerializer(serializers.ModelSerializer):
