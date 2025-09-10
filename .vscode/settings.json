@@ -1,0 +1,10 @@
+{
+    "terminal.integrated.automationProfile.linux": {
+        "path": "/usr/bin/bash"
+    },
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.fixAll": ["source.unusedImports"],
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "python-envs.pythonProjects": []
+}
