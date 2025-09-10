@@ -23,6 +23,7 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'corsheaders',
     'django_filters',
+    'rest_framework_simplejwt',
 ]
 
 LOCAL_APPS = [
