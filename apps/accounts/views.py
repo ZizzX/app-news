@@ -35,7 +35,7 @@ class RegisterView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 
-class LoginView(APIView):
+class LoginView(generics.GenericAPIView):
     """ 
     View for user login.
     """
