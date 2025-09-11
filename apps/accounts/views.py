@@ -2,7 +2,8 @@ from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate
+from rest_framework.decorators import api_view, permission_classes
+from django.contrib.auth import login
 from .models import User
 from .serializers import (
     UserRegistrationSerializer,
@@ -30,6 +31,7 @@ class RegisterView(generics.CreateAPIView):
             'user': UserProfileSerializer(user).data,
             'refresh': str(refresh),
             'access': str(refresh.access_token),
+            'detail': 'User registered successfully.'
         }, status=status.HTTP_201_CREATED)
 
 
@@ -37,17 +39,22 @@ class LoginView(APIView):
     """ 
     View for user login.
     """
+    serializer_class = UserLoginSerializer
     permission_classes = [permissions.AllowAny]
 
-    def post(self, request):
-        serializer = UserLoginSerializer(data=request.data, context={'request': request})
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+
+        login(request, user)
         refresh = RefreshToken.for_user(user)
+        
         return Response({
             'user': UserProfileSerializer(user).data,
             'refresh': str(refresh),
             'access': str(refresh.access_token),
+            'detail': 'User logged in successfully.'
         }, status=status.HTTP_200_OK)
 
 
@@ -84,29 +91,17 @@ class ChangePasswordView(generics.UpdateAPIView):
         return Response({"detail": "Password updated successfully."}, status=status.HTTP_200_OK)
 
 
-class UserDeleteView(generics.DestroyAPIView):
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def logout_view(request):
     """
-    View for deleting user account.
+    Logout view to blacklist the refresh token.
     """
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_object(self):
-        return self.request.user
-
-    def destroy(self, request, *args, **kwargs):
-        user = self.get_object()
-        user.delete()
-        return Response({"detail": "Account deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
-
-
-class UserDeactivateView(APIView):
-    """
-    View for deactivating user account.
-    """
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request):
-        user = request.user
-        user.is_active = False
-        user.save()
-        return Response({"detail": "Account deactivated successfully."}, status=status.HTTP_200_OK)
+    try:
+        refresh_token = request.data["refresh"]
+        if refresh_token:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+        return Response({"detail": "User logged out successfully."}, status=status.HTTP_200_OK)
+    except Exception:
+        return Response({"detail": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)

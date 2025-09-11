@@ -287,3 +287,6 @@ coverage
 .vscode
 celerybeat-schedule
 celerybeat-schedule-wal
+
+.kilocodemodes
+.kilocode
