@@ -8,7 +8,7 @@ class UserAdmin(DjangoUserAdmin):
 	"""Admin configuration for custom User model."""
 	model = User
 	list_display = ("id", "email", "username", "first_name", "last_name", "is_staff", "is_active", "date_joined")
-	list_filter = ("is_staff", "is_active", "is_superuser")
+	list_filter = ("is_staff", "is_active", "is_superuser", "created_at", "updated_at")
 	search_fields = ("email", "username", "first_name", "last_name")
 	ordering = ("-date_joined",)
 
