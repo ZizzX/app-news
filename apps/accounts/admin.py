@@ -7,10 +7,10 @@ from .models import User
 class UserAdmin(DjangoUserAdmin):
 	"""Admin configuration for custom User model."""
 	model = User
-	list_display = ("id", "email", "username", "first_name", "last_name", "is_staff", "is_active", "date_joined")
+	list_display = ("id", "email", "username", "first_name", "last_name", "bio", "is_superuser", "is_staff", "is_active", "created_at", "updated_at")
 	list_filter = ("is_staff", "is_active", "is_superuser", "created_at", "updated_at")
 	search_fields = ("email", "username", "first_name", "last_name")
-	ordering = ("-date_joined",)
+	ordering = ("-created_at",)
 
 	fieldsets = (
 		(None, {"fields": ("email", "username", "password")}),
